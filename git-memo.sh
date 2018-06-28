@@ -5,6 +5,7 @@ switch_branch()
 {
     # default to general ledger unless provided
     local branch="${1:-$GIT_MEMO_DEFAULT_BRANCH}"
+    local parent_branch="${2:-$GIT_MEMO_DEFAULT_BRANCH}"
     # create the dotdir, if needed
     [[ -d "$GIT_MEMO_DIR" ]] || mkdir -p $GIT_MEMO_DIR
     # create the git repo, if needed
@@ -18,7 +19,7 @@ switch_branch()
     git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR rev-parse --verify --quiet $branch > /dev/null
     if [[ $? -ne 0 ]]; then
         # branch from the default line
-        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout $GIT_MEMO_DEFAULT_BRANCH
+        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout $parent_branch
         git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout -b $branch
         git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --allow-empty -m "Beginning of $branch journal"
     else
@@ -54,7 +55,9 @@ list_todo()
 
 new_todo()
 {
-    switch_branch "todo"
+    # switch to the todo branch off project name
+    switch_branch "$1_todo" "$1"
+
     date -u > $GIT_MEMO_DIR/last_updated
     git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR add last_updated
     git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --allow-empty
