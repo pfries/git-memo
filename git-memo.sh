@@ -44,6 +44,25 @@ list_git_memo()
         git --git-dir=$GIT_MEMO_DIR/.git log $GIT_MEMO_DEFAULT_BRANCH..$branch --
     fi
 }
+
+list_todo()
+{
+    switch_branch "todo"
+    git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR cherry -v "general" "todo"
+    switch_branch
+}
+
+new_todo()
+{
+    switch_branch "todo"
+    date -u > $GIT_MEMO_DIR/last_updated
+    git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR add last_updated
+    git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --allow-empty
+    switch_branch
+}
+
 # alias to whatever is easy to type 
 alias log=new_git_memo
 alias logl=list_git_memo
+alias todo=new_todo
+alias todol=list_todo
