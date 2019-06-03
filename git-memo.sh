@@ -10,15 +10,15 @@ switch_branch()
     # create the git repo, if needed
     if [[ ! -d "$GIT_MEMO_DIR/.git" ]]; then
         git init $GIT_MEMO_DIR
-        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout -b $branch
-        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --allow-empty -m 'Beginning of journal'
+        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --quiet --allow-empty -m 'Beginning of journal'
+        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout --quiet -b $GIT_MEMO_DEFAULT_BRANCH
     fi
 
     # create branch if not exists
     git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR rev-parse --verify --quiet $branch > /dev/null
     if [[ $? -ne 0 ]]; then
         # branch from the default line
-        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout $GIT_MEMO_DEFAULT_BRANCH
+        git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout --quiet $GIT_MEMO_DEFAULT_BRANCH
         git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR checkout -b $branch
         git --git-dir=$GIT_MEMO_DIR/.git --work-tree=$GIT_MEMO_DIR commit --allow-empty -m "Beginning of $branch journal"
     else
